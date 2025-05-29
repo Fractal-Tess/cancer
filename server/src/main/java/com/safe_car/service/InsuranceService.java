@@ -37,7 +37,6 @@ public class InsuranceService {
 		Insurance insurance = insuranceMapper.toEntity(dto);
 		insurance.setUserId(user.getId());
 		insurance.setStartDate(LocalDate.now());
-		insurance.setVehicleName(dto.getCarDetails().getBrand() + " " + dto.getCarDetails().getModel());
 		insurance.setPolicyNumber(generatePolicyNumber());
 		insurance.setStartDate(LocalDate.now());
 		insurance.setEndDate(LocalDate.now().plusYears(1));

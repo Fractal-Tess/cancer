@@ -1,6 +1,7 @@
 package com.safe_car.dto;
 
 import com.safe_car.model.Card;
+import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,5 +44,17 @@ public class InsuranceDTO {
 		@NotNull
 		@NotBlank
 		private String coverageType;
+
+		@NotNull
+		private Integer previousIncidents;
+
+		@NotNull
+		private Integer greenhouseEmissionScore;
+
+		@NotNull
+		private Integer horsepower;
+
+		@NotNull
+		private Integer mileage;
 	}
 }
