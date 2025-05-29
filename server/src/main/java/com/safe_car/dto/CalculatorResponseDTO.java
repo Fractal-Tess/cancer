@@ -1,7 +1,8 @@
 package com.safe_car.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-@Data public class CalculatorResponseDTO {
+@Data @AllArgsConstructor public class CalculatorResponseDTO {
 	private double premium;
 }

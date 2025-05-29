@@ -4,8 +4,7 @@ import com.safe_car.dto.CalculatorRequestDTO;
 import com.safe_car.dto.CalculatorResponseDTO;
 import org.springframework.stereotype.Service;
 
-@Service
-public class CalculatorService {
+@Service public class CalculatorService {
 
 	private static final double BASE_PREMIUM = 500.0;
 	private static final double GREEN_SCORE_FACTOR = 2.0;
