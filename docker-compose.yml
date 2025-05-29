@@ -29,5 +29,20 @@ services:
       - ./init/init-db.sh:/init-db.sh:ro
     entrypoint: ["/bin/bash", "/init-db.sh"]
 
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: server_safe_car
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      mssql:
+        condition: service_healthy
+      initdb:
+        condition: service_completed_successfully
+
 volumes:
   mssql_data:

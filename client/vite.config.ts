@@ -13,7 +13,6 @@ export default defineConfig(({ mode }) => ({
     Boolean
   ),
   build: {
-    outDir: '../server/src/main/resources/static',
     emptyOutDir: true,
   },
   resolve: {
