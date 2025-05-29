@@ -21,7 +21,7 @@ public class CardService {
 
 	public List<CardDTO> findBySession(HttpSession session) {
 		User user = userService.getAuthenticated(session);
-		List<Card> cards = cardRepository.findByUsername(user.getUsername());
+		List<Card> cards = cardRepository.findByUserId(user.getId());
 
 		return cards.stream().map(card -> {
 			String cardNum = card.getCardNumber();
