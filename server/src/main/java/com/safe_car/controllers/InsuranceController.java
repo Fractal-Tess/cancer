@@ -1,15 +1,14 @@
 package com.safe_car.controllers;
 
-import com.safe_car.dto.InsurancePurchaseRequest;
+import com.safe_car.dto.InsuranceRequestDTO;
 import com.safe_car.entity.Insurance;
-import com.safe_car.service.InsuranceService;
+import com.safe_car.entity.User;
 import com.safe_car.repositories.UserRepository;
-import com.safe_car.models.User;
-
+import com.safe_car.service.InsuranceService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,73 +17,76 @@ import java.util.Optional;
 @RequestMapping("/api/insurance")
 public class InsuranceController {
 
-    @Autowired
-    private InsuranceService insuranceService;
+	@Autowired
+	private InsuranceService insuranceService;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @PostMapping("/purchase")
-    public ResponseEntity<?> purchaseInsurance(
-            @RequestBody InsurancePurchaseRequest request,
-            HttpSession session) {
-        Object userId = session.getAttribute("user");
-        if (userId == null) {
-            return ResponseEntity.status(401).body("Not authenticated");
-        }
+	@PostMapping("/purchase")
+	public ResponseEntity<?> purchaseInsurance(
+			@RequestBody InsuranceRequestDTO request,
+			HttpSession session
+	) {
+		Object userId = session.getAttribute("user");
+		if (userId == null) {
+			return ResponseEntity.status(401).body("Not authenticated");
+		}
 
-        Optional<User> userOpt = userRepository.findById((Long) userId);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(401).body("Not authenticated");
-        }
+		Optional<User> userOpt = userRepository.findById((Long) userId);
+		if (userOpt.isEmpty()) {
+			return ResponseEntity.status(401).body("Not authenticated");
+		}
 
-        String username = userOpt.get().getUsername();
-        Insurance insurance = insuranceService.purchaseInsurance(username, request);
-        return ResponseEntity.ok(insurance);
-    }
+		String username = userOpt.get().getUsername();
+		Insurance insurance = insuranceService.purchaseInsurance(username, request);
+		return ResponseEntity.ok(insurance);
+	}
 
-    @GetMapping("/list")
-    public ResponseEntity<?> getUserInsurances(
-            @RequestParam(required = false) Insurance.InsuranceStatus status,
-            HttpSession session) {
-        Object userId = session.getAttribute("user");
-        if (userId == null) {
-            return ResponseEntity.status(401).body("Not authenticated");
-        }
+	@GetMapping("/list")
+	public ResponseEntity<?> getUserInsurances(
+			@RequestParam(required = false) Insurance.InsuranceStatus status,
+			HttpSession session
+	) {
+		Object userId = session.getAttribute("user");
+		if (userId == null) {
+			return ResponseEntity.status(401).body("Not authenticated");
+		}
 
-        Optional<User> userOpt = userRepository.findById((Long) userId);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(401).body("Not authenticated");
-        }
+		Optional<User> userOpt = userRepository.findById((Long) userId);
+		if (userOpt.isEmpty()) {
+			return ResponseEntity.status(401).body("Not authenticated");
+		}
 
-        String username = userOpt.get().getUsername();
-        List<Insurance> insurances;
+		String username = userOpt.get().getUsername();
+		List<Insurance> insurances;
 
-        if (status != null) {
-            insurances = insuranceService.getUserInsurancesByStatus(username, status);
-        } else {
-            insurances = insuranceService.getUserInsurances(username);
-        }
+		if (status != null) {
+			insurances = insuranceService.getUserInsurancesByStatus(username, status);
+		} else {
+			insurances = insuranceService.getUserInsurances(username);
+		}
 
-        return ResponseEntity.ok(insurances);
-    }
+		return ResponseEntity.ok(insurances);
+	}
 
-    @PostMapping("/{insuranceId}/cancel")
-    public ResponseEntity<?> cancelInsurance(
-            @PathVariable Long insuranceId,
-            HttpSession session) {
-        Object userId = session.getAttribute("user");
-        if (userId == null) {
-            return ResponseEntity.status(401).body("Not authenticated");
-        }
+	@PostMapping("/{insuranceId}/cancel")
+	public ResponseEntity<?> cancelInsurance(
+			@PathVariable Long insuranceId,
+			HttpSession session
+	) {
+		Object userId = session.getAttribute("user");
+		if (userId == null) {
+			return ResponseEntity.status(401).body("Not authenticated");
+		}
 
-        Optional<User> userOpt = userRepository.findById((Long) userId);
-        if (userOpt.isEmpty()) {
-            return ResponseEntity.status(401).body("Not authenticated");
-        }
+		Optional<User> userOpt = userRepository.findById((Long) userId);
+		if (userOpt.isEmpty()) {
+			return ResponseEntity.status(401).body("Not authenticated");
+		}
 
-        String username = userOpt.get().getUsername();
-        insuranceService.cancelInsurance(insuranceId, username);
-        return ResponseEntity.ok().build();
-    }
+		String username = userOpt.get().getUsername();
+		insuranceService.cancelInsurance(insuranceId, username);
+		return ResponseEntity.ok().build();
+	}
 }

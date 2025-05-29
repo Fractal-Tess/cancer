@@ -4,7 +4,7 @@ import com.safe_car.entity.CardInfo;
 
 import java.util.Map;
 
-public class InsurancePurchaseRequest {
+public class InsuranceRequestDTO {
 	private Double premium;
 	private Map<String, Object> carDetails;
 	private Boolean saveCard;
@@ -39,7 +39,7 @@ public class InsurancePurchaseRequest {
 		return saveCard;
 	}
 
-	public InsurancePurchaseRequest setSaveCard(Boolean saveCard) {
+	public InsuranceRequestDTO setSaveCard(Boolean saveCard) {
 		this.saveCard = saveCard;
 		return this;
 	}
