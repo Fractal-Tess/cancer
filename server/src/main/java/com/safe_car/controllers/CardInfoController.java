@@ -1,6 +1,6 @@
 package com.safe_car.controllers;
 
-import com.safe_car.entity.CardInfo;
+import com.safe_car.entity.Card;
 import com.safe_car.entity.User;
 import com.safe_car.repositories.CardInfoRepository;
 import com.safe_car.repositories.UserRepository;
@@ -34,7 +34,7 @@ public class CardInfoController {
 			return ResponseEntity.status(401).body("Not authenticated");
 		}
 		String username = userOpt.get().getUsername();
-		List<CardInfo> cards = cardInfoRepository.findAll().stream()
+		List<Card> cards = cardInfoRepository.findAll().stream()
 				.filter(card -> card.getUsername().equals(username))
 				.collect(Collectors.toList());
 		// Mask card numbers except last 4 digits

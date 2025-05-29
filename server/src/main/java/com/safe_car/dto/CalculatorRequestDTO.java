@@ -2,8 +2,7 @@ package com.safe_car.dto;
 
 import lombok.Data;
 
-@Data
-public class CalculatorRequestDTO {
+@Data public class CalculatorRequestDTO {
 	private String make;
 	private String model;
 	private int year;
