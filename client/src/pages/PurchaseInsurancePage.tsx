@@ -20,7 +20,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 interface LocationState {
   premium: number;
   carDetails: {
-    make: string;
+    brand: string;
     model: string;
     year: number;
     horsepower: number;
@@ -267,7 +267,7 @@ const PurchaseInsurancePage = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Vehicle</span>
                   <span className="font-medium">
-                    {state.carDetails.year} {state.carDetails.make} {state.carDetails.model}
+                    {state.carDetails.year} {state.carDetails.brand} {state.carDetails.model}
                   </span>
                 </div>
                 <div className="flex justify-between">

@@ -31,10 +31,11 @@ public class UserService {
 	}
 
 	public UserDTO authenticate(UserDTO dto, HttpSession session) {
-		User user = findByUsername(dto.getUsername());
+		User user = findByEmail(dto.getEmail());
 		if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 			throw new IllegalStateException("Invalid username or password");
 		}
+		session.setAttribute("user", user.getId());
 		return userMapper.toDTO(user);
 	}
 
@@ -51,8 +52,8 @@ public class UserService {
 		return user;
 	}
 
-	public User findByUsername(String username) {
-		var user = userRepository.findByUsername(username);
+	public User findByEmail(String email) {
+		var user = userRepository.findByEmail(email);
 		if (user == null) {
 			throw new IllegalStateException("User not found");
 		}
