@@ -24,7 +24,7 @@ public class CardService {
 		List<Card> cards = cardRepository.findByUsername(username);
 
 		// Mask card numbers except last 4 digits
-		List<CardDTO> masked = cards.stream().map(card -> {
+		return cards.stream().map(card -> {
 			String cardNum = card.getCardNumber();
 			String maskedNum = cardNum.length() > 4 ?
 					"**** **** **** " + cardNum.substring(cardNum.length() - 4) :
@@ -32,6 +32,5 @@ public class CardService {
 			card.setCardNumber(maskedNum);
 			return cardMapper.toDTO(card);
 		}).collect(Collectors.toList());
-		return masked;
 	}
 }

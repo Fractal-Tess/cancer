@@ -4,7 +4,7 @@ import com.safe_car.dto.InsuranceRequestDTO;
 import com.safe_car.entity.Insurance;
 import com.safe_car.repositories.CardRepository;
 import com.safe_car.repositories.InsuranceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +14,10 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class InsuranceService {
-	@Autowired
-	private InsuranceRepository insuranceRepository;
-	@Autowired
-	private CardRepository cardInfoRepository;
+	private final InsuranceRepository insuranceRepository;
+	private final CardRepository cardInfoRepository;
 
 	@Transactional
 	public Insurance purchaseInsurance(String username, InsuranceRequestDTO request) {

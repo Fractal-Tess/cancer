@@ -28,12 +28,8 @@ public class AuthController {
 
 	@GetMapping("/me")
 	public ResponseEntity<?> me(HttpSession session) {
-		Object userId = session.getAttribute("user");
-		if (userId == null) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-
-		UserDTO userDTO = userService.findByIdDTO((Long) userId);
+		Long userId = (Long) session.getAttribute("user");
+		UserDTO userDTO = userService.findByIdDTO(userId);
 		return ResponseEntity.ok(userDTO);
 	}
 
