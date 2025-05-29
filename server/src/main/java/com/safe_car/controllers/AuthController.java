@@ -24,6 +24,10 @@ public class AuthController {
         String username = userMap.get("username");
         String email = userMap.get("email");
         String password = userMap.get("password");
+        String confirmPassword = userMap.get("confirmPassword");
+        if (!password.equals(confirmPassword)) {
+            return ResponseEntity.badRequest().body("Passwords do not match");
+        }
         if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {
             return ResponseEntity.badRequest().body("Username or email already exists");
         }
@@ -37,7 +41,9 @@ public class AuthController {
     public ResponseEntity<?> signin(@RequestBody Map<String, String> userMap, HttpSession session) {
         String username = userMap.get("username");
         String password = userMap.get("password");
+
         Optional<User> userOpt = userRepository.findByUsername(username);
+        System.out.println(userOpt);
         if (userOpt.isEmpty() || !passwordEncoder.matches(password, userOpt.get().getPassword())) {
             return ResponseEntity.status(401).body("Invalid username or password");
         }
