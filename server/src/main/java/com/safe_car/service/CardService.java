@@ -5,6 +5,7 @@ import com.safe_car.entity.Card;
 import com.safe_car.entity.User;
 import com.safe_car.mapper.CardMapper;
 import com.safe_car.repositories.CardRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,10 @@ public class CardService {
 	private final CardRepository cardRepository;
 	private final CardMapper cardMapper;
 
-	public List<CardDTO> findByUserIdDTO(Long userId) {
-		User user = userService.findById(userId);
-		String username = user.getUsername();
-		List<Card> cards = cardRepository.findByUsername(username);
+	public List<CardDTO> findBySession(HttpSession session) {
+		User user = userService.getAuthenticated(session);
+		List<Card> cards = cardRepository.findByUsername(user.getUsername());
 
-		// Mask card numbers except last 4 digits
 		return cards.stream().map(card -> {
 			String cardNum = card.getCardNumber();
 			String maskedNum = cardNum.length() > 4 ?
