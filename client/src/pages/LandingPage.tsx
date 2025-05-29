@@ -1,11 +1,13 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Car, Shield, Bell } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 const LandingPage = () => {
+  const { user } = useAuth();
+
   return (
     <div className="animate-fade-in">
       {/* Hero Section */}
@@ -23,9 +25,11 @@ const LandingPage = () => {
               <Link to="/calculator">
                 <Button size="lg" className="px-8">Calculate Your Rate</Button>
               </Link>
-              <Link to="/signup">
-                <Button size="lg" variant="outline" className="px-8">Sign Up Free</Button>
-              </Link>
+              {!user && (
+                <Link to="/signup">
+                  <Button size="lg" variant="outline" className="px-8">Sign Up Free</Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

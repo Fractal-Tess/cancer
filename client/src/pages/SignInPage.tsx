@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Link, useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useAuth } from '@/lib/auth';
 
 const SignInPage = () => {
   const [email, setEmail] = useState('');
@@ -19,6 +20,7 @@ const SignInPage = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { refreshAuth } = useAuth();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ const SignInPage = () => {
     });
     setLoading(false);
     if (res.ok) {
+      await refreshAuth(); // Refresh auth state after successful login
       navigate('/'); // Redirect to home or dashboard
     } else {
       setError(await res.text());

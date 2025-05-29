@@ -1,11 +1,8 @@
-
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { Bell, Car, Check, Clock, Shield } from "lucide-react";
 
 // Sample insurance data
@@ -73,29 +70,6 @@ const mockInsurances = [
 ];
 
 const InsurancesPage = () => {
-  const [showExpired, setShowExpired] = useState(false);
-  
-  // Filter for active policies
-  const activeInsurances = mockInsurances.filter(insurance => insurance.status === "active");
-  
-  // Filter for expired policies
-  const expiredInsurances = mockInsurances.filter(insurance => insurance.status === "expired");
-  
-  // Calculate days until expiry for an insurance policy
-  const getDaysUntilExpiry = (endDate: string) => {
-    const today = new Date();
-    const expiry = new Date(endDate);
-    const diffTime = expiry.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-  
-  // Format date to readable string
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="mb-12">
@@ -105,163 +79,187 @@ const InsurancesPage = () => {
         </p>
       </div>
       
-      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="mb-6">
         <Button variant="outline" className="gap-2">
           <Car className="h-4 w-4" />
           Add New Vehicle
         </Button>
-        
-        <div className="flex items-center space-x-2">
-          <Label htmlFor="show-expired">Show expired policies</Label>
-          <Switch
-            id="show-expired"
-            checked={showExpired}
-            onCheckedChange={setShowExpired}
-          />
-        </div>
       </div>
       
-      <Tabs defaultValue="active" className="w-full">
-        <TabsList className="mb-8 grid w-full grid-cols-2">
-          <TabsTrigger value="active">Active Policies ({activeInsurances.length})</TabsTrigger>
-          <TabsTrigger value="expired">Past Policies ({expiredInsurances.length})</TabsTrigger>
+      <Tabs defaultValue="all" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="all">All Policies</TabsTrigger>
+          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="expired">Expired</TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="active" className="space-y-6">
-          {activeInsurances.length > 0 ? (
-            activeInsurances.map(insurance => {
-              const daysUntilExpiry = getDaysUntilExpiry(insurance.endDate);
-              const isExpiringSoon = daysUntilExpiry <= 30;
-              
-              return (
-                <Card key={insurance.id} className="overflow-hidden transition-all hover:shadow-md">
-                  <div className={`h-1 w-full ${isExpiringSoon ? 'bg-amber-500' : 'bg-green-500'}`}></div>
-                  <CardHeader className="space-y-0 pb-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <CardTitle className="text-xl">{insurance.vehicleName} ({insurance.year})</CardTitle>
-                        <CardDescription>Policy #{insurance.policyNumber}</CardDescription>
-                      </div>
-                      <Badge variant={isExpiringSoon ? "outline" : "default"} className={isExpiringSoon ? "border-amber-500 text-amber-500" : ""}>
-                        {isExpiringSoon ? (
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            <span>Expires soon</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1">
-                            <Check className="h-3 w-3" />
-                            <span>Active</span>
-                          </div>
-                        )}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pb-2">
-                    <div className="grid gap-4 md:grid-cols-4">
-                      <div>
-                        <p className="text-xs text-gray-500">Coverage Type</p>
-                        <p className="font-medium">{insurance.coverageType}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Start Date</p>
-                        <p className="font-medium">{formatDate(insurance.startDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">End Date</p>
-                        <p className="font-medium">{formatDate(insurance.endDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Monthly Premium</p>
-                        <p className="font-medium">${insurance.premium.toFixed(2)}</p>
-                      </div>
-                    </div>
-                    
-                    {isExpiringSoon && (
-                      <div className="mt-4 flex items-center gap-2 rounded-md bg-amber-50 p-3 text-amber-800">
-                        <Bell className="h-4 w-4" />
-                        <p className="text-sm">Your policy will expire in {daysUntilExpiry} days. Renew now to avoid coverage gaps.</p>
-                      </div>
+
+        <TabsContent value="all" className="space-y-4">
+          {mockInsurances.map((insurance) => (
+            <Card key={insurance.id} className="overflow-hidden">
+              <CardHeader className="border-b bg-gray-50/50">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl">{insurance.vehicleName}</CardTitle>
+                    <CardDescription>
+                      Policy #{insurance.policyNumber} • {insurance.coverageType}
+                    </CardDescription>
+                  </div>
+                  <Badge variant={insurance.status === 'active' ? 'default' : 'secondary'}>
+                    {insurance.status === 'active' ? (
+                      <Check className="mr-1 h-3 w-3" />
+                    ) : (
+                      <Clock className="mr-1 h-3 w-3" />
                     )}
-                  </CardContent>
-                  <CardFooter className="flex justify-between border-t pt-4">
-                    <Button variant="outline" size="sm">View Details</Button>
-                    <Button size="sm">Manage Policy</Button>
-                  </CardFooter>
-                </Card>
-              );
-            })
-          ) : (
-            <div className="rounded-lg border border-dashed p-12 text-center">
-              <Shield className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-              <h3 className="mb-2 text-xl font-semibold">No Active Policies</h3>
-              <p className="mb-6 text-gray-500">You don't have any active insurance policies at the moment.</p>
-              <Button>Get Insured Today</Button>
-            </div>
-          )}
+                    {insurance.status.charAt(0).toUpperCase() + insurance.status.slice(1)}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">License Plate</p>
+                    <p className="text-lg">{insurance.licensePlate}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Year</p>
+                    <p className="text-lg">{insurance.year}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Coverage Period</p>
+                    <p className="text-lg">
+                      {new Date(insurance.startDate).toLocaleDateString()} - {new Date(insurance.endDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Monthly Premium</p>
+                    <p className="text-lg font-semibold text-insurance-blue">${insurance.premium}</p>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="border-t bg-gray-50/50 p-4">
+                <div className="flex w-full items-center justify-between">
+                  <Button variant="ghost" size="sm">
+                    View Details
+                  </Button>
+                  {insurance.status === 'active' && (
+                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                      Cancel Policy
+                    </Button>
+                  )}
+                </div>
+              </CardFooter>
+            </Card>
+          ))}
         </TabsContent>
-        
-        <TabsContent value="expired" className="space-y-6">
-          {showExpired ? (
-            expiredInsurances.length > 0 ? (
-              expiredInsurances.map(insurance => (
-                <Card key={insurance.id} className="overflow-hidden opacity-80 transition-all hover:opacity-100">
-                  <div className="h-1 w-full bg-gray-300"></div>
-                  <CardHeader className="space-y-0 pb-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <CardTitle className="text-xl">{insurance.vehicleName} ({insurance.year})</CardTitle>
-                        <CardDescription>Policy #{insurance.policyNumber}</CardDescription>
-                      </div>
-                      <Badge variant="outline" className="text-gray-500">Expired</Badge>
+
+        <TabsContent value="active" className="space-y-4">
+          {mockInsurances
+            .filter(insurance => insurance.status === 'active')
+            .map((insurance) => (
+              <Card key={insurance.id} className="overflow-hidden">
+                <CardHeader className="border-b bg-gray-50/50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-xl">{insurance.vehicleName}</CardTitle>
+                      <CardDescription>
+                        Policy #{insurance.policyNumber} • {insurance.coverageType}
+                      </CardDescription>
                     </div>
-                  </CardHeader>
-                  <CardContent className="pb-2">
-                    <div className="grid gap-4 md:grid-cols-4">
-                      <div>
-                        <p className="text-xs text-gray-500">Coverage Type</p>
-                        <p className="font-medium">{insurance.coverageType}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Start Date</p>
-                        <p className="font-medium">{formatDate(insurance.startDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">End Date</p>
-                        <p className="font-medium">{formatDate(insurance.endDate)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Monthly Premium</p>
-                        <p className="font-medium">${insurance.premium.toFixed(2)}</p>
-                      </div>
+                    <Badge>
+                      <Check className="mr-1 h-3 w-3" />
+                      Active
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">License Plate</p>
+                      <p className="text-lg">{insurance.licensePlate}</p>
                     </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between border-t pt-4">
-                    <Button variant="outline" size="sm">View History</Button>
-                    <Button size="sm">Renew Policy</Button>
-                  </CardFooter>
-                </Card>
-              ))
-            ) : (
-              <div className="rounded-lg border border-dashed p-12 text-center">
-                <Clock className="mx-auto mb-4 h-12 w-12 text-gray-300" />
-                <h3 className="mb-2 text-xl font-semibold">No Expired Policies</h3>
-                <p className="text-gray-500">You don't have any expired insurance policies.</p>
-              </div>
-            )
-          ) : (
-            <div className="rounded-lg border border-dashed p-12 text-center">
-              <div className="mx-auto mb-6 flex items-center justify-center gap-2">
-                <Switch
-                  id="toggle-expired-view"
-                  checked={showExpired}
-                  onCheckedChange={setShowExpired}
-                />
-                <Label htmlFor="toggle-expired-view">Enable to view expired policies</Label>
-              </div>
-              <p className="text-gray-500">Toggle the switch above to view your expired insurance policies.</p>
-            </div>
-          )}
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Year</p>
+                      <p className="text-lg">{insurance.year}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Coverage Period</p>
+                      <p className="text-lg">
+                        {new Date(insurance.startDate).toLocaleDateString()} - {new Date(insurance.endDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Monthly Premium</p>
+                      <p className="text-lg font-semibold text-insurance-blue">${insurance.premium}</p>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="border-t bg-gray-50/50 p-4">
+                  <div className="flex w-full items-center justify-between">
+                    <Button variant="ghost" size="sm">
+                      View Details
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                      Cancel Policy
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
+        </TabsContent>
+
+        <TabsContent value="expired" className="space-y-4">
+          {mockInsurances
+            .filter(insurance => insurance.status === 'expired')
+            .map((insurance) => (
+              <Card key={insurance.id} className="overflow-hidden">
+                <CardHeader className="border-b bg-gray-50/50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-xl">{insurance.vehicleName}</CardTitle>
+                      <CardDescription>
+                        Policy #{insurance.policyNumber} • {insurance.coverageType}
+                      </CardDescription>
+                    </div>
+                    <Badge variant="secondary">
+                      <Clock className="mr-1 h-3 w-3" />
+                      Expired
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">License Plate</p>
+                      <p className="text-lg">{insurance.licensePlate}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Year</p>
+                      <p className="text-lg">{insurance.year}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Coverage Period</p>
+                      <p className="text-lg">
+                        {new Date(insurance.startDate).toLocaleDateString()} - {new Date(insurance.endDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Monthly Premium</p>
+                      <p className="text-lg font-semibold text-insurance-blue">${insurance.premium}</p>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="border-t bg-gray-50/50 p-4">
+                  <div className="flex w-full items-center justify-between">
+                    <Button variant="ghost" size="sm">
+                      View Details
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      Renew Policy
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
         </TabsContent>
       </Tabs>
     </div>

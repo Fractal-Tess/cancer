@@ -24,10 +24,6 @@ public class AuthController {
         String username = userMap.get("username");
         String email = userMap.get("email");
         String password = userMap.get("password");
-        String confirmPassword = userMap.get("confirmPassword");
-        if (!password.equals(confirmPassword)) {
-            return ResponseEntity.badRequest().body("Passwords do not match");
-        }
         if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {
             return ResponseEntity.badRequest().body("Username or email already exists");
         }
