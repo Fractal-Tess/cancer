@@ -1,13 +1,12 @@
 package com.safe_car.controllers;
 
-import com.safe_car.dto.InsuranceRequestDTO;
+import com.safe_car.dto.InsuranceDTO;
 import com.safe_car.entity.Insurance;
 import com.safe_car.entity.User;
 import com.safe_car.repositories.UserRepository;
 import com.safe_car.service.InsuranceService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,19 +21,8 @@ public class InsuranceController {
 	private final UserRepository userRepository;
 
 	@PostMapping("/purchase")
-	public ResponseEntity<?> purchaseInsurance(@RequestBody InsuranceRequestDTO request, HttpSession session) {
-		Object userId = session.getAttribute("user");
-		if (userId == null) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-
-		Optional<User> userOpt = userRepository.findById((Long) userId);
-		if (userOpt.isEmpty()) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-
-		String username = userOpt.get().getUsername();
-		Insurance insurance = insuranceService.purchaseInsurance(username, request);
+	public ResponseEntity<?> purchaseInsurance(@RequestBody InsuranceDTO request, HttpSession session) {
+		Insurance insurance = insuranceService.purchaseInsurance(session, request);
 		return ResponseEntity.ok(insurance);
 	}
 
@@ -43,26 +31,8 @@ public class InsuranceController {
 			@RequestParam(required = false) Insurance.InsuranceStatus status,
 			HttpSession session
 	) {
-		Object userId = session.getAttribute("user");
-		if (userId == null) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-
-		Optional<User> userOpt = userRepository.findById((Long) userId);
-		if (userOpt.isEmpty()) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-
-		String username = userOpt.get().getUsername();
-		List<Insurance> insurances;
-
-		if (status != null) {
-			insurances = insuranceService.getUserInsurancesByStatus(username, status);
-		} else {
-			insurances = insuranceService.getUserInsurances(username);
-		}
-
-		return ResponseEntity.ok(insurances);
+		List<Insurance> insurance = insuranceService.getCurrentUserInsurances(session, status);
+		return ResponseEntity.ok(insurance);
 	}
 
 	@PostMapping("/{insuranceId}/cancel")

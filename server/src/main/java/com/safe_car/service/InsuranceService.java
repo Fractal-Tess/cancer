@@ -1,16 +1,18 @@
 package com.safe_car.service;
 
-import com.safe_car.dto.InsuranceRequestDTO;
+import com.safe_car.dto.InsuranceDTO;
 import com.safe_car.entity.Insurance;
+import com.safe_car.entity.User;
+import com.safe_car.mapper.InsuranceMapper;
 import com.safe_car.repositories.CardRepository;
 import com.safe_car.repositories.InsuranceRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -18,33 +20,42 @@ import java.util.UUID;
 public class InsuranceService {
 	private final InsuranceRepository insuranceRepository;
 	private final CardRepository cardInfoRepository;
+	private final InsuranceMapper insuranceMapper;
+	private final UserService userService;
 
 	@Transactional
-	public Insurance purchaseInsurance(String username, InsuranceRequestDTO request) {
-		Map<String, Object> carDetails = request.getCarDetails();
+	public Insurance purchaseInsurance(HttpSession session, InsuranceDTO dto) {
+		User user = userService.getAuthenticated(session);
 
 		// Save card info if requested
-		var cardInfo = request.getCardDetails();
-		if (cardInfo.getSaveCard()) {
-			cardInfo.setUsername(username);
+		if (dto.getSaveCard()) {
+			var cardInfo = dto.getCardDetails();
+			cardInfo.setUsername(user.getUsername());
 			cardInfoRepository.save(cardInfo);
 		}
 
-		Insurance insurance = new Insurance();
-		insurance.setUsername(username);
-		insurance.setVehicleName(carDetails.get("make") + " " + carDetails.get("model"));
-		insurance.setCarMake((String) carDetails.get("make"));
-		insurance.setCarModel((String) carDetails.get("model"));
-		insurance.setCarYear((Integer) carDetails.get("year"));
-		insurance.setLicensePlate((String) carDetails.get("licensePlate"));
-		insurance.setCoverageType((String) carDetails.get("coverageType"));
+		Insurance insurance = insuranceMapper.toEntity(dto);
+		insurance.setUsername(user.getUsername());
+		insurance.setStartDate(LocalDate.now());
+		insurance.setVehicleName(dto.getCarDetails().getMake() + " " + dto.getCarDetails().getModel());
 		insurance.setPolicyNumber(generatePolicyNumber());
 		insurance.setStartDate(LocalDate.now());
 		insurance.setEndDate(LocalDate.now().plusYears(1));
-		insurance.setPremium(request.getPremium());
+		insurance.setPremium(dto.getPremium());
 		insurance.setStatus(Insurance.InsuranceStatus.ACTIVE);
 
 		return insuranceRepository.save(insurance);
+	}
+
+	public List<Insurance> getCurrentUserInsurances(HttpSession session, Insurance.InsuranceStatus status) {
+		User user = userService.getAuthenticated(session);
+		List<Insurance> insurances;
+		if (status != null) {
+			insurances = getUserInsurancesByStatus(user.getUsername(), status);
+		} else {
+			insurances = getUserInsurances(user.getUsername());
+		}
+		return insurances;
 	}
 
 	public List<Insurance> getUserInsurances(String username) {

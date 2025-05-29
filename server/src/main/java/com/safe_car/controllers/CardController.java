@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CardController {
 	private final CardService cardService;
-	
+
 	@GetMapping
 	public ResponseEntity<List<CardDTO>> getSavedCards(HttpSession session) {
 		return ResponseEntity.ok(cardService.findBySession(session));
