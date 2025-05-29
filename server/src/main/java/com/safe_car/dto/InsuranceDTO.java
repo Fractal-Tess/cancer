@@ -1,7 +1,5 @@
 package com.safe_car.dto;
 
-import com.safe_car.model.Card;
-import jakarta.persistence.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,11 +16,9 @@ public class InsuranceDTO {
 	@Valid
 	private CarDetailsDTO carDetails;
 
-	private Boolean saveCard;
-
 	@NotNull
 	@Valid
-	private Card cardDetails;
+	private CardDTO cardDetails;
 
 	@Data
 	public static class CarDetailsDTO {

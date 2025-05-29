@@ -1,6 +1,7 @@
 package com.safe_car.service;
 
 import com.safe_car.dto.InsuranceDTO;
+import com.safe_car.mapper.CardMapper;
 import com.safe_car.mapper.InsuranceMapper;
 import com.safe_car.model.Insurance;
 import com.safe_car.model.User;
@@ -22,19 +23,22 @@ public class InsuranceService {
 	private final CardRepository cardInfoRepository;
 	private final InsuranceMapper insuranceMapper;
 	private final UserService userService;
+	private final CardMapper cardMapper;
 
 	@Transactional
 	public Insurance purchaseInsurance(HttpSession session, InsuranceDTO dto) {
 		User user = userService.getAuthenticated(session);
 
 		// Save card info if requested
-		if (dto.getSaveCard()) {
+		if (dto.getCardDetails().getSaveCard()) {
 			var cardInfo = dto.getCardDetails();
 			cardInfo.setUserId(user.getId());
-			cardInfoRepository.save(cardInfo);
+			var card = cardMapper.toEntity(cardInfo);
+			cardInfoRepository.save(card);
 		}
 
 		Insurance insurance = insuranceMapper.toEntity(dto);
+		insurance.setVehicleName(dto.getCarDetails().getBrand() + " " + dto.getCarDetails().getModel());
 		insurance.setUserId(user.getId());
 		insurance.setStartDate(LocalDate.now());
 		insurance.setPolicyNumber(generatePolicyNumber());

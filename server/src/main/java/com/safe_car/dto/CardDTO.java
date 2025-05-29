@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 public class CardDTO {
 	@NotNull
+	private Long id;
+
+	@NotNull
 	private Long userId;
 
 	@NotNull
