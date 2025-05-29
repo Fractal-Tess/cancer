@@ -8,7 +8,7 @@ import lombok.Data;
 public class CalculatorRequestDTO {
 	@NotNull
 	@NotBlank
-	private String make;
+	private String brand;
 
 	@NotNull
 	@NotBlank

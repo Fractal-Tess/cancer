@@ -18,6 +18,9 @@ public class Card {
 	private String cardNumber;
 
 	@Column(nullable = false)
+	private String cvv;
+
+	@Column(nullable = false)
 	private String expiryDate;
 
 	@Column(nullable = false)

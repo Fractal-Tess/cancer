@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface InsuranceRepository extends JpaRepository<Insurance, Long> {
-	List<Insurance> findByUsername(String username);
+	List<Insurance> findByUserId(Long userId);
 
-	List<Insurance> findByUsernameAndStatus(String username, Insurance.InsuranceStatus status);
+	List<Insurance> findByUserIdAndStatus(Long userId, Insurance.InsuranceStatus status);
 }

@@ -1,9 +1,11 @@
 package com.safe_car.service;
 
 import com.safe_car.dto.InsuranceDTO;
+import com.safe_car.mapper.CardMapper;
+import com.safe_car.mapper.InsuranceMapper;
+import com.safe_car.model.Card;
 import com.safe_car.model.Insurance;
 import com.safe_car.model.User;
-import com.safe_car.mapper.InsuranceMapper;
 import com.safe_car.repositories.CardRepository;
 import com.safe_car.repositories.InsuranceRepository;
 import jakarta.servlet.http.HttpSession;
@@ -13,28 +15,44 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class InsuranceService {
 	private final InsuranceRepository insuranceRepository;
-	private final CardRepository cardInfoRepository;
+	private final CardRepository cardRepository;
 	private final InsuranceMapper insuranceMapper;
 	private final UserService userService;
+	private final CardMapper cardMapper;
 
 	@Transactional
 	public Insurance purchaseInsurance(HttpSession session, InsuranceDTO dto) {
 		User user = userService.getAuthenticated(session);
 
 		// Save card info if requested
-		if (dto.getSaveCard()) {
+		if (dto.getCardDetails().getSaveCard()) {
 			var cardInfo = dto.getCardDetails();
 			cardInfo.setUserId(user.getId());
-			cardInfoRepository.save(cardInfo);
+			var card = cardMapper.toEntity(cardInfo);
+			cardRepository.save(card);
+		} else {
+			Long cardId = dto.getCardDetails().getId();
+			if (cardId == null) {
+				throw new IllegalArgumentException("Card id is null");
+			}
+			Optional<Card> card = cardRepository.findById(cardId);
+			if (card.isEmpty()) {
+				throw new IllegalArgumentException("Card not found");
+			}
+			if (!card.get().getCvv().equals(dto.getCardDetails().getCvv())) {
+				throw new IllegalStateException("Card cvv does not match");
+			}
 		}
 
 		Insurance insurance = insuranceMapper.toEntity(dto);
+		insurance.setVehicleName(dto.getCarDetails().getBrand() + " " + dto.getCarDetails().getModel());
 		insurance.setUserId(user.getId());
 		insurance.setStartDate(LocalDate.now());
 		insurance.setPolicyNumber(generatePolicyNumber());
@@ -50,19 +68,19 @@ public class InsuranceService {
 		User user = userService.getAuthenticated(session);
 		List<Insurance> insurances;
 		if (status != null) {
-			insurances = getUserInsurancesByStatus(user.getUsername(), status);
+			insurances = getUserInsurancesByStatus(user.getId(), status);
 		} else {
-			insurances = getUserInsurances(user.getUsername());
+			insurances = getUserInsurances(user.getId());
 		}
 		return insurances;
 	}
 
-	public List<Insurance> getUserInsurances(String username) {
-		return insuranceRepository.findByUsername(username);
+	public List<Insurance> getUserInsurances(Long userId) {
+		return insuranceRepository.findByUserId(userId);
 	}
 
-	public List<Insurance> getUserInsurancesByStatus(String username, Insurance.InsuranceStatus status) {
-		return insuranceRepository.findByUsernameAndStatus(username, status);
+	public List<Insurance> getUserInsurancesByStatus(Long userId, Insurance.InsuranceStatus status) {
+		return insuranceRepository.findByUserIdAndStatus(userId, status);
 	}
 
 	@Transactional
