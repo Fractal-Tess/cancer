@@ -13,6 +13,7 @@ import InsurancesPage from "./pages/InsurancesPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import NotFound from "./pages/NotFound";
+import PurchaseInsurancePage from "./pages/PurchaseInsurancePage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <InsurancesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/purchase-insurance" 
+                element={
+                  <ProtectedRoute>
+                    <PurchaseInsurancePage />
                   </ProtectedRoute>
                 } 
               />

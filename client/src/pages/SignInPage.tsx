@@ -1,112 +1,132 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/lib/auth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Link, useNavigate } from 'react-router-dom';
-import { Checkbox } from '@/components/ui/checkbox';
-import { useAuth } from '@/lib/auth';
+import { useToast } from '@/components/ui/use-toast';
+import { LogIn } from 'lucide-react';
+
+interface LocationState {
+  redirectTo?: string;
+  redirectState?: any;
+}
 
 const SignInPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
   const { refreshAuth } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    const res = await fetch(`${import.meta.env.VITE_BACKEND}/api/auth/signin`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ username: email, password }),
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
     });
-    setLoading(false);
-    if (res.ok) {
-      await refreshAuth(); // Refresh auth state after successful login
-      navigate('/'); // Redirect to home or dashboard
-    } else {
-      setError(await res.text());
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND}/api/auth/signin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        await refreshAuth();
+        toast({
+          title: 'Success!',
+          description: 'You have been signed in successfully.',
+        });
+
+        // Get redirect information from location state
+        const state = location.state as LocationState;
+        if (state?.redirectTo) {
+          navigate(state.redirectTo, { state: state.redirectState });
+        } else {
+          navigate('/insurances');
+        }
+      } else {
+        throw new Error('Failed to sign in');
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to sign in. Please check your credentials.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto flex min-h-[calc(100vh-200px)] items-center px-4 py-12">
-      <div className="mx-auto w-full max-w-md">
-        <Card className="shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
-              Welcome back
+    <div className="container mx-auto px-4 py-12">
+      <div className="mx-auto max-w-md">
+        <div className="mb-8 text-center">
+          <h1 className="mb-3 text-3xl font-bold text-gray-900">Sign In</h1>
+          <p className="text-lg text-gray-600">
+            Sign in to your account to manage your insurance policies
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <LogIn className="h-5 w-5 text-insurance-blue" />
+              <span>Enter Your Details</span>
             </CardTitle>
-            <CardDescription className="text-center">
-              Sign in to your account to manage your insurances
-            </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <form onSubmit={handleSignIn} className="space-y-4">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={handleChange}
                   required
                 />
               </div>
+
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs text-insurance-blue hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
                   required
                 />
               </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
-                <Label htmlFor="remember" className="text-sm">
-                  Remember me for 30 days
-                </Label>
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Signing In...' : 'Sign In'}
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? 'Signing in...' : 'Sign In'}
               </Button>
-              {error && <div className="text-red-500 text-center">{error}</div>}
             </form>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <div className="text-center text-sm">
-              Don't have an account?{' '}
-              <Link
-                to="/signup"
-                className="font-medium text-insurance-blue hover:underline"
-              >
-                Sign up
-              </Link>
-            </div>
-          </CardFooter>
         </Card>
       </div>
     </div>

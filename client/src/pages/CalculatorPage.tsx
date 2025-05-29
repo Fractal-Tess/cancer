@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
@@ -15,18 +15,31 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAuth } from '@/lib/auth';
+import { useNavigate } from 'react-router-dom';
 
 const CalculatorPage = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   // Car details state
   const [carDetails, setCarDetails] = useState({
     make: '',
     model: '',
     year: new Date().getFullYear(),
+    driverAge: 30, // Default age
     horsepower: 150,
     mileage: 10000,
-    greenScore: 50, // 0-100 scale where higher is better for environment
+    greenScore: 50,
     previousIncidents: 0,
+    coverageType: 'comprehensive'
   });
+
+  const COVERAGE_TYPES = [
+    { value: 'basic', label: 'Basic Coverage' },
+    { value: 'standard', label: 'Standard Coverage' },
+    { value: 'comprehensive', label: 'Comprehensive Coverage' },
+    { value: 'premium', label: 'Premium Coverage' },
+  ];
 
   // Premium calculation state
   const [premium, setPremium] = useState<number | null>(null);
@@ -42,17 +55,27 @@ const CalculatorPage = () => {
 
   // Calculate insurance premium
   const calculatePremium = async () => {
+    if (!carDetails.make || !carDetails.model) {
+      setPremium(null);
+      return;
+    }
+
     setCalculating(true);
     try {
-      const res = await fetch('/api/calculator/calculate', {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND}/api/calculator/calculate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          carMake: carDetails.make,
-          carModel: carDetails.model,
-          carYear: carDetails.year,
-          driverAge: 30, // Replace with real user data if available
+          make: carDetails.make,
+          model: carDetails.model,
+          year: carDetails.year,
+          driverAge: carDetails.driverAge,
+          horsepower: carDetails.horsepower,
+          mileage: carDetails.mileage,
+          greenScore: carDetails.greenScore,
+          previousIncidents: carDetails.previousIncidents,
+          coverageType: carDetails.coverageType
         }),
       });
       if (res.ok) {
@@ -61,9 +84,42 @@ const CalculatorPage = () => {
       } else {
         setPremium(null);
       }
+    } catch (error) {
+      console.error('Failed to calculate premium:', error);
+      setPremium(null);
     } finally {
       setCalculating(false);
     }
+  };
+
+  // Calculate premium whenever car details change
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      calculatePremium();
+    }, 500); // Debounce calculation for 500ms
+
+    return () => clearTimeout(timeoutId);
+  }, [carDetails]);
+
+  const handlePurchase = () => {
+    navigate('/purchase-insurance', {
+      state: {
+        premium,
+        carDetails
+      }
+    });
+  };
+
+  const handleSignIn = () => {
+    navigate('/signin', {
+      state: {
+        redirectTo: '/purchase-insurance',
+        redirectState: {
+          premium,
+          carDetails
+        }
+      }
+    });
   };
 
   return (
@@ -190,6 +246,27 @@ const CalculatorPage = () => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="coverageType">Coverage Type</Label>
+              <Select
+                value={carDetails.coverageType}
+                onValueChange={(value) => handleChange('coverageType', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select coverage type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {COVERAGE_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="incidents">
                 Previous Incidents (last 3 years)
               </Label>
@@ -214,39 +291,44 @@ const CalculatorPage = () => {
                 </SelectContent>
               </Select>
             </div>
-
-            <Button
-              onClick={calculatePremium}
-              className="w-full"
-              disabled={calculating || !carDetails.make || !carDetails.model}
-            >
-              {calculating ? 'Calculating...' : 'Calculate Premium'}
-            </Button>
           </CardContent>
         </Card>
 
         {/* Results Card */}
-        <Card>
+        <Card className='flex flex-col'>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Car className="h-5 w-5 text-insurance-blue" />
               <span>Your Estimated Premium</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center space-y-6">
-            {premium !== null ? (
+          <CardContent className="flex flex-col items-center justify-center space-y-6 flex-1">
+            {calculating ? (
               <div className="text-center">
-                <div className="mb-4 text-5xl font-bold text-insurance-blue">
+                <div className="mb-4 text-3xl text-gray-500">Calculating...</div>
+              </div>
+            ) : premium !== null ? (
+              <div className="text-center w-full">
+                <div className="mb-4 text-6xl font-bold text-insurance-blue">
                   ${premium}
                 </div>
-                <p className="mb-6 text-gray-600">Estimated monthly premium</p>
+                <p className="mb-6 text-lg text-gray-600">Estimated monthly premium</p>
 
-                <div className="rounded-lg bg-blue-50 p-4 text-left">
-                  <h3 className="mb-2 font-semibold">Premium Breakdown:</h3>
-                  <ul className="space-y-1 text-sm">
+                <div className="rounded-lg p-4 text-left">
+                  <h3 className="mb-2 text-lg font-semibold">Premium Breakdown:</h3>
+                  <ul className="space-y-1 text-base">
                     <li className="flex justify-between">
                       <span>Base premium:</span>
                       <span>$500.00</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span>Coverage type ({carDetails.coverageType}):</span>
+                      <span>
+                        {carDetails.coverageType === 'basic' ? '1.0x' :
+                         carDetails.coverageType === 'standard' ? '1.3x' :
+                         carDetails.coverageType === 'comprehensive' ? '1.6x' :
+                         '2.0x'}
+                      </span>
                     </li>
                     <li className="flex justify-between">
                       <span>Horsepower adjustment:</span>
@@ -263,7 +345,7 @@ const CalculatorPage = () => {
                     <li className="flex justify-between">
                       <span>Green score discount:</span>
                       <span>
-                        -${((carDetails.greenScore / 100) * 200).toFixed(2)}
+                        -${(carDetails.greenScore * 2).toFixed(2)}
                       </span>
                     </li>
                     <li className="flex justify-between">
@@ -272,30 +354,52 @@ const CalculatorPage = () => {
                         ${(carDetails.previousIncidents * 250).toFixed(2)}
                       </span>
                     </li>
+                    {carDetails.driverAge < 25 && (
+                      <li className="flex justify-between">
+                        <span>Age adjustment:</span>
+                        <span>
+                          ${((25 - carDetails.driverAge) * 5).toFixed(2)}
+                        </span>
+                      </li>
+                    )}
                     <li className="flex justify-between">
                       <span>Vehicle age adjustment:</span>
                       <span>
-                        $
-                        {(
-                          (new Date().getFullYear() - carDetails.year) *
-                          25
-                        ).toFixed(2)}
+                        ${((new Date().getFullYear() - carDetails.year) * 25).toFixed(2)}
                       </span>
                     </li>
                   </ul>
                 </div>
-
-                <Button className="mt-6 w-full">Save This Quote</Button>
               </div>
             ) : (
-              <div className="py-12 text-center">
-                <p className="text-lg text-gray-500">
-                  Enter your vehicle details and click "Calculate Premium" to
-                  see your estimated insurance cost.
-                </p>
+              <div className="text-center">
+                <div className="mb-4 text-3xl text-gray-500">
+                  Enter your vehicle details to see your estimated premium
+                </div>
               </div>
             )}
           </CardContent>
+          <CardFooter className="flex justify-center ">
+            {premium !== null && (
+              user ? (
+                <Button
+                  onClick={handlePurchase}
+                  className="w-full"
+                  size="lg"
+                >
+                  Purchase Insurance
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleSignIn}
+                  className="w-full"
+                  size="lg"
+                >
+                  Sign in to Purchase
+                </Button>
+              )
+            )}
+          </CardFooter>
         </Card>
       </div>
     </div>
