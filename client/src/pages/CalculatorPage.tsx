@@ -23,7 +23,7 @@ const CalculatorPage = () => {
   const { user } = useAuth();
   // Car details state
   const [carDetails, setCarDetails] = useState({
-    make: '',
+    brand: '',
     model: '',
     year: new Date().getFullYear(),
     driverAge: 30, // Default age
@@ -55,7 +55,7 @@ const CalculatorPage = () => {
 
   // Calculate insurance premium
   const calculatePremium = async () => {
-    if (!carDetails.make || !carDetails.model) {
+    if (!carDetails.brand || !carDetails.model) {
       setPremium(null);
       return;
     }
@@ -67,7 +67,7 @@ const CalculatorPage = () => {
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          make: carDetails.make,
+          brand: carDetails.brand,
           model: carDetails.model,
           year: carDetails.year,
           driverAge: carDetails.driverAge,
@@ -146,12 +146,12 @@ const CalculatorPage = () => {
           <CardContent className="space-y-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="make">Car Make</Label>
+                <Label htmlFor="brand">Car Brand</Label>
                 <Input
-                  id="make"
+                  id="brand"
                   placeholder="e.g. Toyota"
-                  value={carDetails.make}
-                  onChange={(e) => handleChange('make', e.target.value)}
+                  value={carDetails.brand}
+                  onChange={(e) => handleChange('brand', e.target.value)}
                 />
               </div>
 
