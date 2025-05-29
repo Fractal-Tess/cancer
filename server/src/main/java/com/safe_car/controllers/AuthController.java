@@ -1,62 +1,44 @@
 package com.safe_car.controllers;
 
-import com.safe_car.entity.User;
-import com.safe_car.repositories.UserRepository;
+import com.safe_car.dto.UserDTO;
+import com.safe_car.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.Optional;
+@RestController
+@RequestMapping("/api/auth")
+@RequiredArgsConstructor
+public class AuthController {
+	private final UserService userService;
 
-@RestController @RequestMapping("/api/auth") public class AuthController {
-	@Autowired private UserRepository userRepository;
-
-	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-	@PostMapping("/signup") public ResponseEntity<?> signup(@RequestBody Map<String, String> userMap) {
-		String username = userMap.get("username");
-		String email = userMap.get("email");
-		String password = userMap.get("password");
-		if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {
-			return ResponseEntity.badRequest().body("Username or email already exists");
-		}
-		String hashedPassword = passwordEncoder.encode(password);
-		User user = new User(username, email, hashedPassword);
-		userRepository.save(user);
+	@PostMapping("/signup")
+	public ResponseEntity<String> signup(@RequestBody @Valid UserDTO dto) {
+		userService.createUser(dto);
 		return ResponseEntity.ok("User registered successfully");
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<?> signin(@RequestBody Map<String, String> userMap, HttpSession session) {
-		String username = userMap.get("username");
-		String password = userMap.get("password");
-
-		Optional<User> userOpt = userRepository.findByUsername(username);
-		System.out.println(userOpt);
-		if (userOpt.isEmpty() || !passwordEncoder.matches(password, userOpt.get().getPassword())) {
-			return ResponseEntity.status(401).body("Invalid username or password");
-		}
-		session.setAttribute("user", userOpt.get().getId());
-		return ResponseEntity.ok("Login successful");
+	public ResponseEntity<UserDTO> signin(@RequestBody UserDTO dto, HttpSession session) {
+		UserDTO userDTO = userService.authenticate(dto);
+		return ResponseEntity.ok(userDTO);
 	}
 
-	@GetMapping("/me") public ResponseEntity<?> me(HttpSession session) {
+	@GetMapping("/me")
+	public ResponseEntity<?> me(HttpSession session) {
 		Object userId = session.getAttribute("user");
 		if (userId == null) {
 			return ResponseEntity.status(401).body("Not authenticated");
 		}
-		Optional<User> userOpt = userRepository.findById((Long) userId);
-		if (userOpt.isEmpty()) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-		User user = userOpt.get();
-		return ResponseEntity.ok(Map.of("id", user.getId(), "username", user.getUsername(), "email", user.getEmail()));
+
+		UserDTO userDTO = userService.findById((Long) userId);
+		return ResponseEntity.ok(userDTO);
 	}
 
-	@PostMapping("/logout") public ResponseEntity<?> logout(HttpSession session) {
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(HttpSession session) {
 		session.invalidate();
 		return ResponseEntity.ok("Logged out");
 	}
