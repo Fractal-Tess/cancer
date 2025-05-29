@@ -37,18 +37,7 @@ public class InsuranceController {
 
 	@PostMapping("/{insuranceId}/cancel")
 	public ResponseEntity<?> cancelInsurance(@PathVariable Long insuranceId, HttpSession session) {
-		Object userId = session.getAttribute("user");
-		if (userId == null) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-
-		Optional<User> userOpt = userRepository.findById((Long) userId);
-		if (userOpt.isEmpty()) {
-			return ResponseEntity.status(401).body("Not authenticated");
-		}
-
-		String username = userOpt.get().getUsername();
-		insuranceService.cancelInsurance(insuranceId, username);
+		insuranceService.cancelInsurance(insuranceId, session);
 		return ResponseEntity.ok().build();
 	}
 }

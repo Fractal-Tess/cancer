@@ -67,11 +67,12 @@ public class InsuranceService {
 	}
 
 	@Transactional
-	public void cancelInsurance(Long insuranceId, String username) {
+	public void cancelInsurance(Long insuranceId, HttpSession session) {
+		User user = userService.getAuthenticated(session);
 		Insurance insurance = insuranceRepository.findById(insuranceId).orElseThrow(() -> new RuntimeException(
 				"Insurance not found"));
 
-		if (!insurance.getUsername().equals(username)) {
+		if (!insurance.getUsername().equals(user.getUsername())) {
 			throw new RuntimeException("Unauthorized to cancel this insurance");
 		}
 
