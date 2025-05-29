@@ -11,16 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-	@Autowired
-	private UserRepository userRepository;
+@RestController @RequestMapping("/api/auth") public class AuthController {
+	@Autowired private UserRepository userRepository;
 
 	private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-	@PostMapping("/signup")
-	public ResponseEntity<?> signup(@RequestBody Map<String, String> userMap) {
+	@PostMapping("/signup") public ResponseEntity<?> signup(@RequestBody Map<String, String> userMap) {
 		String username = userMap.get("username");
 		String email = userMap.get("email");
 		String password = userMap.get("password");
@@ -47,8 +43,7 @@ public class AuthController {
 		return ResponseEntity.ok("Login successful");
 	}
 
-	@GetMapping("/me")
-	public ResponseEntity<?> me(HttpSession session) {
+	@GetMapping("/me") public ResponseEntity<?> me(HttpSession session) {
 		Object userId = session.getAttribute("user");
 		if (userId == null) {
 			return ResponseEntity.status(401).body("Not authenticated");
@@ -58,15 +53,10 @@ public class AuthController {
 			return ResponseEntity.status(401).body("Not authenticated");
 		}
 		User user = userOpt.get();
-		return ResponseEntity.ok(Map.of(
-				"id", user.getId(),
-				"username", user.getUsername(),
-				"email", user.getEmail()
-		));
+		return ResponseEntity.ok(Map.of("id", user.getId(), "username", user.getUsername(), "email", user.getEmail()));
 	}
 
-	@PostMapping("/logout")
-	public ResponseEntity<?> logout(HttpSession session) {
+	@PostMapping("/logout") public ResponseEntity<?> logout(HttpSession session) {
 		session.invalidate();
 		return ResponseEntity.ok("Logged out");
 	}

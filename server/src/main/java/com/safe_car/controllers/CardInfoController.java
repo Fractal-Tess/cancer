@@ -15,16 +15,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/card-info")
-public class CardInfoController {
-	@Autowired
-	private CardInfoRepository cardInfoRepository;
-	@Autowired
-	private UserRepository userRepository;
+@RestController @RequestMapping("/api/card-info") public class CardInfoController {
+	@Autowired private CardInfoRepository cardInfoRepository;
+	@Autowired private UserRepository userRepository;
 
-	@GetMapping
-	public ResponseEntity<?> getSavedCards(HttpSession session) {
+	@GetMapping public ResponseEntity<?> getSavedCards(HttpSession session) {
 		Object userId = session.getAttribute("user");
 		if (userId == null) {
 			return ResponseEntity.status(401).body("Not authenticated");
@@ -34,14 +29,16 @@ public class CardInfoController {
 			return ResponseEntity.status(401).body("Not authenticated");
 		}
 		String username = userOpt.get().getUsername();
-		List<Card> cards = cardInfoRepository.findAll().stream()
+		List<Card> cards = cardInfoRepository.findAll()
+				.stream()
 				.filter(card -> card.getUsername().equals(username))
 				.collect(Collectors.toList());
 		// Mask card numbers except last 4 digits
 		List<Object> masked = cards.stream().map(card -> {
 			String cardNum = card.getCardNumber();
-			String maskedNum = cardNum.length() > 4 ? "**** **** **** " + cardNum.substring(cardNum.length() - 4)
-					: cardNum;
+			String maskedNum = cardNum.length() > 4 ?
+					"**** **** **** " + cardNum.substring(cardNum.length() - 4) :
+					cardNum;
 			return new java.util.HashMap<String, Object>() {
 				{
 					put("id", card.getId());

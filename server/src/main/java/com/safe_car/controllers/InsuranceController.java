@@ -13,21 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/insurance")
-public class InsuranceController {
+@RestController @RequestMapping("/api/insurance") public class InsuranceController {
 
-	@Autowired
-	private InsuranceService insuranceService;
+	@Autowired private InsuranceService insuranceService;
 
-	@Autowired
-	private UserRepository userRepository;
+	@Autowired private UserRepository userRepository;
 
 	@PostMapping("/purchase")
-	public ResponseEntity<?> purchaseInsurance(
-			@RequestBody InsuranceRequestDTO request,
-			HttpSession session
-	) {
+	public ResponseEntity<?> purchaseInsurance(@RequestBody InsuranceRequestDTO request, HttpSession session) {
 		Object userId = session.getAttribute("user");
 		if (userId == null) {
 			return ResponseEntity.status(401).body("Not authenticated");
@@ -71,10 +64,7 @@ public class InsuranceController {
 	}
 
 	@PostMapping("/{insuranceId}/cancel")
-	public ResponseEntity<?> cancelInsurance(
-			@PathVariable Long insuranceId,
-			HttpSession session
-	) {
+	public ResponseEntity<?> cancelInsurance(@PathVariable Long insuranceId, HttpSession session) {
 		Object userId = session.getAttribute("user");
 		if (userId == null) {
 			return ResponseEntity.status(401).body("Not authenticated");
