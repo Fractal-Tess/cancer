@@ -18,7 +18,7 @@ public class InsuranceDTO {
 	@Valid
 	private CarDetailsDTO carDetails;
 
-	private Boolean saveCard = false;
+	private Boolean saveCard;
 
 	@NotNull
 	@Valid
@@ -49,7 +49,7 @@ public class InsuranceDTO {
 		private Integer previousIncidents;
 
 		@NotNull
-		private Integer greenhouseEmissionScore;
+		private Integer greenScore;
 
 		@NotNull
 		private Integer horsepower;

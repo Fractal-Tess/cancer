@@ -12,7 +12,7 @@ public interface InsuranceMapper {
 	@Mapping(source = "carDetails.licensePlate", target = "licensePlate")
 	@Mapping(source = "carDetails.coverageType", target = "coverageType")
 	@Mapping(source = "carDetails.previousIncidents", target = "previousIncidents")
-	@Mapping(source = "carDetails.greenhouseEmissionScore", target = "greenhouseEmissionScore")
+	@Mapping(source = "carDetails.greenScore", target = "greenhouseEmissionScore")
 	@Mapping(source = "carDetails.horsepower", target = "horsepower")
 	@Mapping(source = "carDetails.mileage", target = "mileage")
 	Insurance toEntity(InsuranceDTO dto);
