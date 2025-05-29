@@ -13,11 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController @RequestMapping("/api/insurance") public class InsuranceController {
+@RestController
+@RequestMapping("/api/insurance")
+public class InsuranceController {
 
-	@Autowired private InsuranceService insuranceService;
+	@Autowired
+	private InsuranceService insuranceService;
 
-	@Autowired private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	@PostMapping("/purchase")
 	public ResponseEntity<?> purchaseInsurance(@RequestBody InsuranceRequestDTO request, HttpSession session) {

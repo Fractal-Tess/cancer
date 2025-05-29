@@ -2,7 +2,7 @@ package com.safe_car.service;
 
 import com.safe_car.dto.InsuranceRequestDTO;
 import com.safe_car.entity.Insurance;
-import com.safe_car.repositories.CardInfoRepository;
+import com.safe_car.repositories.CardRepository;
 import com.safe_car.repositories.InsuranceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +13,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@Service public class InsuranceService {
-	@Autowired private InsuranceRepository insuranceRepository;
-	@Autowired private CardInfoRepository cardInfoRepository;
+@Service
+public class InsuranceService {
+	@Autowired
+	private InsuranceRepository insuranceRepository;
+	@Autowired
+	private CardRepository cardInfoRepository;
 
-	@Transactional public Insurance purchaseInsurance(String username, InsuranceRequestDTO request) {
+	@Transactional
+	public Insurance purchaseInsurance(String username, InsuranceRequestDTO request) {
 		Map<String, Object> carDetails = request.getCarDetails();
 
 		// Save card info if requested
@@ -52,7 +56,8 @@ import java.util.UUID;
 		return insuranceRepository.findByUsernameAndStatus(username, status);
 	}
 
-	@Transactional public void cancelInsurance(Long insuranceId, String username) {
+	@Transactional
+	public void cancelInsurance(Long insuranceId, String username) {
 		Insurance insurance = insuranceRepository.findById(insuranceId).orElseThrow(() -> new RuntimeException(
 				"Insurance not found"));
 

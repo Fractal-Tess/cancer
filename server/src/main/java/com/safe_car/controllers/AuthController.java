@@ -33,7 +33,7 @@ public class AuthController {
 			return ResponseEntity.status(401).body("Not authenticated");
 		}
 
-		UserDTO userDTO = userService.findById((Long) userId);
+		UserDTO userDTO = userService.findByIdDTO((Long) userId);
 		return ResponseEntity.ok(userDTO);
 	}
 

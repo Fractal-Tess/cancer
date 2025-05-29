@@ -6,7 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository public interface InsuranceRepository extends JpaRepository<Insurance, Long> {
+@Repository
+public interface InsuranceRepository extends JpaRepository<Insurance, Long> {
 	List<Insurance> findByUsername(String username);
 
 	List<Insurance> findByUsernameAndStatus(String username, Insurance.InsuranceStatus status);

@@ -5,7 +5,8 @@ import lombok.Data;
 
 import java.util.Map;
 
-@Data public class InsuranceRequestDTO {
+@Data
+public class InsuranceRequestDTO {
 	private Double premium;
 	private Map<String, Object> carDetails;
 	private Boolean saveCard;

@@ -2,10 +2,10 @@ package com.safe_car.controllers;
 
 import com.safe_car.entity.Card;
 import com.safe_car.entity.User;
-import com.safe_car.repositories.CardInfoRepository;
+import com.safe_car.repositories.CardRepository;
 import com.safe_car.repositories.UserRepository;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +15,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RestController @RequestMapping("/api/card-info") public class CardInfoController {
-	@Autowired private CardInfoRepository cardInfoRepository;
-	@Autowired private UserRepository userRepository;
+@RestController
+@RequestMapping("/api/card")
+@RequiredArgsConstructor
+public class CardController {
+	private final CardRepository cardInfoRepository;
+	private final UserRepository userRepository;
 
-	@GetMapping public ResponseEntity<?> getSavedCards(HttpSession session) {
+	@GetMapping
+	public ResponseEntity<?> getSavedCards(HttpSession session) {
 		Object userId = session.getAttribute("user");
 		if (userId == null) {
 			return ResponseEntity.status(401).body("Not authenticated");

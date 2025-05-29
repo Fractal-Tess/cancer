@@ -39,11 +39,16 @@ public class UserService {
 		return userMapper.toDTO(userOpt.get());
 	}
 
-	public UserDTO findById(Long id) {
+	public UserDTO findByIdDTO(Long id) {
+		var user = findById(id);
+		return userMapper.toDTO(user);
+	}
+
+	public User findById(Long id) {
 		var user = userRepository.findById(id).orElse(null);
 		if (user == null) {
 			throw new IllegalStateException("User not found");
 		}
-		return userMapper.toDTO(user);
+		return user;
 	}
 }
