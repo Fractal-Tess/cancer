@@ -47,6 +47,18 @@ public class Insurance {
 	private Double premium;
 
 	@Column(nullable = false)
+	private Integer previousIncidents;
+
+	@Column(nullable = false)
+	private Integer greenhouseEmissionScore;
+
+	@Column(nullable = false)
+	private Integer horsepower;
+
+	@Column(nullable = false)
+	private Integer mileage;
+
+	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private InsuranceStatus status;
 

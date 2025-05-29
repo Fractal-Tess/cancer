@@ -11,11 +11,14 @@ public interface InsuranceMapper {
 	@Mapping(source = "carDetails.year", target = "carYear")
 	@Mapping(source = "carDetails.licensePlate", target = "licensePlate")
 	@Mapping(source = "carDetails.coverageType", target = "coverageType")
+	@Mapping(source = "carDetails.previousIncidents", target = "previousIncidents")
+	@Mapping(source = "carDetails.greenhouseEmissionScore", target = "greenhouseEmissionScore")
+	@Mapping(source = "carDetails.horsepower", target = "horsepower")
+	@Mapping(source = "carDetails.mileage", target = "mileage")
 	Insurance toEntity(InsuranceDTO dto);
-
-	InsuranceDTO toDTO(Insurance model);
 
 	@AfterMapping
 	default void mapCarMakeToVehicleName(Insurance dto, @MappingTarget Insurance model) {
+		model.setVehicleName(dto.getCarBrand() + " " + dto.getCarModel());
 	}
 }
