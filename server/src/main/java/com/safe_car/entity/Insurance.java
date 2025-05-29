@@ -1,11 +1,13 @@
 package com.safe_car.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "insurances")
+@Data
 public class Insurance {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,111 +49,6 @@ public class Insurance {
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	private InsuranceStatus status;
-
-	// Getters and Setters
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getVehicleName() {
-		return vehicleName;
-	}
-
-	public void setVehicleName(String vehicleName) {
-		this.vehicleName = vehicleName;
-	}
-
-	public String getCarMake() {
-		return carMake;
-	}
-
-	public void setCarMake(String carMake) {
-		this.carMake = carMake;
-	}
-
-	public String getCarModel() {
-		return carModel;
-	}
-
-	public void setCarModel(String carModel) {
-		this.carModel = carModel;
-	}
-
-	public Integer getCarYear() {
-		return carYear;
-	}
-
-	public void setCarYear(Integer carYear) {
-		this.carYear = carYear;
-	}
-
-	public String getLicensePlate() {
-		return licensePlate;
-	}
-
-	public void setLicensePlate(String licensePlate) {
-		this.licensePlate = licensePlate;
-	}
-
-	public String getCoverageType() {
-		return coverageType;
-	}
-
-	public void setCoverageType(String coverageType) {
-		this.coverageType = coverageType;
-	}
-
-	public String getPolicyNumber() {
-		return policyNumber;
-	}
-
-	public void setPolicyNumber(String policyNumber) {
-		this.policyNumber = policyNumber;
-	}
-
-	public LocalDate getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(LocalDate startDate) {
-		this.startDate = startDate;
-	}
-
-	public LocalDate getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(LocalDate endDate) {
-		this.endDate = endDate;
-	}
-
-	public Double getPremium() {
-		return premium;
-	}
-
-	public void setPremium(Double premium) {
-		this.premium = premium;
-	}
-
-	public InsuranceStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(InsuranceStatus status) {
-		this.status = status;
-	}
 
 	public enum InsuranceStatus {
 		ACTIVE,
