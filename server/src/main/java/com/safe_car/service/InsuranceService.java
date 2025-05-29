@@ -3,6 +3,7 @@ package com.safe_car.service;
 import com.safe_car.dto.InsuranceDTO;
 import com.safe_car.mapper.CardMapper;
 import com.safe_car.mapper.InsuranceMapper;
+import com.safe_car.model.Card;
 import com.safe_car.model.Insurance;
 import com.safe_car.model.User;
 import com.safe_car.repositories.CardRepository;
@@ -14,13 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class InsuranceService {
 	private final InsuranceRepository insuranceRepository;
-	private final CardRepository cardInfoRepository;
+	private final CardRepository cardRepository;
 	private final InsuranceMapper insuranceMapper;
 	private final UserService userService;
 	private final CardMapper cardMapper;
@@ -34,7 +36,19 @@ public class InsuranceService {
 			var cardInfo = dto.getCardDetails();
 			cardInfo.setUserId(user.getId());
 			var card = cardMapper.toEntity(cardInfo);
-			cardInfoRepository.save(card);
+			cardRepository.save(card);
+		} else {
+			Long cardId = dto.getCardDetails().getId();
+			if (cardId == null) {
+				throw new IllegalArgumentException("Card id is null");
+			}
+			Optional<Card> card = cardRepository.findById(cardId);
+			if (card.isEmpty()) {
+				throw new IllegalArgumentException("Card not found");
+			}
+			if (!card.get().getCvv().equals(dto.getCardDetails().getCvv())) {
+				throw new IllegalStateException("Card cvv does not match");
+			}
 		}
 
 		Insurance insurance = insuranceMapper.toEntity(dto);

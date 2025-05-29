@@ -78,7 +78,7 @@ const PurchaseInsurancePage = () => {
 
   const fetchSavedCards = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND}/api/card-info`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND}/api/card`, {
         credentials: 'include',
       });
       
@@ -208,7 +208,7 @@ const PurchaseInsurancePage = () => {
             cardholderName: formData.cardholderName,
             saveCard: formData.saveCard
           } : {
-            cardId: formData.selectedCardId,
+            id: formData.selectedCardId,
             cvv: formData.cvv
           }
         }),

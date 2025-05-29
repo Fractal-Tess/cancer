@@ -18,6 +18,10 @@ public class CardDTO {
 
 	@NotNull
 	@NotBlank
+	private String cvv;
+
+	@NotNull
+	@NotBlank
 	private String expiryDate;
 
 	@NotNull
