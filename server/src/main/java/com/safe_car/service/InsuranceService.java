@@ -1,8 +1,8 @@
 package com.safe_car.service;
 
 import com.safe_car.dto.InsuranceDTO;
-import com.safe_car.entity.Insurance;
-import com.safe_car.entity.User;
+import com.safe_car.model.Insurance;
+import com.safe_car.model.User;
 import com.safe_car.mapper.InsuranceMapper;
 import com.safe_car.repositories.CardRepository;
 import com.safe_car.repositories.InsuranceRepository;
@@ -30,14 +30,14 @@ public class InsuranceService {
 		// Save card info if requested
 		if (dto.getSaveCard()) {
 			var cardInfo = dto.getCardDetails();
-			cardInfo.setUsername(user.getUsername());
+			cardInfo.setUserId(user.getId());
 			cardInfoRepository.save(cardInfo);
 		}
 
 		Insurance insurance = insuranceMapper.toEntity(dto);
-		insurance.setUsername(user.getUsername());
+		insurance.setUserId(user.getId());
 		insurance.setStartDate(LocalDate.now());
-		insurance.setVehicleName(dto.getCarDetails().getMake() + " " + dto.getCarDetails().getModel());
+		insurance.setVehicleName(dto.getCarDetails().getBrand() + " " + dto.getCarDetails().getModel());
 		insurance.setPolicyNumber(generatePolicyNumber());
 		insurance.setStartDate(LocalDate.now());
 		insurance.setEndDate(LocalDate.now().plusYears(1));
@@ -72,7 +72,7 @@ public class InsuranceService {
 		Insurance insurance = insuranceRepository.findById(insuranceId).orElseThrow(() -> new RuntimeException(
 				"Insurance not found"));
 
-		if (!insurance.getUsername().equals(user.getUsername())) {
+		if (!insurance.getUserId().equals(user.getId())) {
 			throw new RuntimeException("Unauthorized to cancel this insurance");
 		}
 

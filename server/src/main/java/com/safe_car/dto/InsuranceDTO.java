@@ -1,6 +1,6 @@
 package com.safe_car.dto;
 
-import com.safe_car.entity.Card;
+import com.safe_car.model.Card;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +27,7 @@ public class InsuranceDTO {
 	public static class CarDetailsDTO {
 		@NotNull
 		@NotBlank
-		private String make;
+		private String brand;
 
 		@NotNull
 		@NotBlank

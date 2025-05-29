@@ -1,6 +1,6 @@
 package com.safe_car.repositories;
 
-import com.safe_car.entity.User;
+import com.safe_car.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

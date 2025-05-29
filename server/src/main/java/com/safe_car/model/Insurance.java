@@ -1,4 +1,4 @@
-package com.safe_car.entity;
+package com.safe_car.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -14,13 +14,13 @@ public class Insurance {
 	private Long id;
 
 	@Column(nullable = false)
-	private String username;
+	private Long userId;
 
 	@Column(nullable = false)
 	private String vehicleName;
 
 	@Column(nullable = false)
-	private String carMake;
+	private String carBrand;
 
 	@Column(nullable = false)
 	private String carModel;

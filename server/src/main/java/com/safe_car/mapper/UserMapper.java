@@ -1,7 +1,7 @@
 package com.safe_car.mapper;
 
 import com.safe_car.dto.UserDTO;
-import com.safe_car.entity.User;
+import com.safe_car.model.User;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 

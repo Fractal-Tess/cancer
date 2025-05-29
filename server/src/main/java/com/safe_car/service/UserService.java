@@ -1,7 +1,7 @@
 package com.safe_car.service;
 
 import com.safe_car.dto.UserDTO;
-import com.safe_car.entity.User;
+import com.safe_car.model.User;
 import com.safe_car.mapper.UserMapper;
 import com.safe_car.repositories.UserRepository;
 import jakarta.servlet.http.HttpSession;

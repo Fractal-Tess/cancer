@@ -1,8 +1,7 @@
 package com.safe_car.controllers;
 
 import com.safe_car.dto.InsuranceDTO;
-import com.safe_car.entity.Insurance;
-import com.safe_car.entity.User;
+import com.safe_car.model.Insurance;
 import com.safe_car.repositories.UserRepository;
 import com.safe_car.service.InsuranceService;
 import jakarta.servlet.http.HttpSession;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/insurance")

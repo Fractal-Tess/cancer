@@ -1,8 +1,8 @@
 package com.safe_car.service;
 
 import com.safe_car.dto.CardDTO;
-import com.safe_car.entity.Card;
-import com.safe_car.entity.User;
+import com.safe_car.model.Card;
+import com.safe_car.model.User;
 import com.safe_car.mapper.CardMapper;
 import com.safe_car.repositories.CardRepository;
 import jakarta.servlet.http.HttpSession;

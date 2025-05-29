@@ -1,4 +1,4 @@
-package com.safe_car.entity;
+package com.safe_car.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

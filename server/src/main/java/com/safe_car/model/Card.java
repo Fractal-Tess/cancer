@@ -1,4 +1,4 @@
-package com.safe_car.entity;
+package com.safe_car.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,7 +12,7 @@ public class Card {
 	private Long id;
 
 	@Column(nullable = false)
-	private String username;
+	private Long userId;
 
 	@Column(nullable = false)
 	private String cardNumber;

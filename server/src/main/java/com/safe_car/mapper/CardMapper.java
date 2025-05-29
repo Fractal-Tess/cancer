@@ -1,7 +1,7 @@
 package com.safe_car.mapper;
 
 import com.safe_car.dto.CardDTO;
-import com.safe_car.entity.Card;
+import com.safe_car.model.Card;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 

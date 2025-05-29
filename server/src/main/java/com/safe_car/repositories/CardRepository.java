@@ -1,6 +1,6 @@
 package com.safe_car.repositories;
 
-import com.safe_car.entity.Card;
+import com.safe_car.model.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
