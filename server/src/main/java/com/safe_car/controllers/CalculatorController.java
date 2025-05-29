@@ -3,6 +3,7 @@ package com.safe_car.controllers;
 import com.safe_car.dto.CalculatorRequestDTO;
 import com.safe_car.dto.CalculatorResponseDTO;
 import com.safe_car.service.CalculatorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ public class CalculatorController {
 	private final CalculatorService calculatorService;
 
 	@PostMapping("/calculate")
-	public ResponseEntity<CalculatorResponseDTO> calculatePremium(@RequestBody CalculatorRequestDTO request) {
+	public ResponseEntity<CalculatorResponseDTO> calculatePremium(@RequestBody @Valid CalculatorRequestDTO request) {
 		CalculatorResponseDTO response = calculatorService.calculatePremium(request);
 		return ResponseEntity.ok(response);
 	}

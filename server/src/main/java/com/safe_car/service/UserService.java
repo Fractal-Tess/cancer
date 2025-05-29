@@ -4,13 +4,12 @@ import com.safe_car.dto.UserDTO;
 import com.safe_car.entity.User;
 import com.safe_car.mapper.UserMapper;
 import com.safe_car.repositories.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +20,8 @@ public class UserService {
 
 	public User createUser(UserDTO dto) {
 		User user = userMapper.toEntity(dto);
-		if (userRepository.findByUsername(user.getUsername()).isPresent() ||
-				userRepository.findByEmail(user.getEmail()).isPresent()) {
+		if (userRepository.findByUsername(user.getUsername()) != null ||
+				userRepository.findByEmail(user.getEmail()) != null) {
 			throw new DataIntegrityViolationException("Username or email already exists");
 		}
 		String hashedPassword = passwordEncoder.encode(user.getPassword());
@@ -31,12 +30,12 @@ public class UserService {
 		return user;
 	}
 
-	public UserDTO authenticate(UserDTO dto) {
-		Optional<User> userOpt = userRepository.findByUsername(dto.getUsername());
-		if (userOpt.isEmpty() || !passwordEncoder.matches(dto.getPassword(), userOpt.get().getPassword())) {
+	public UserDTO authenticate(UserDTO dto, HttpSession session) {
+		User user = findByUsername(dto.getUsername());
+		if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 			throw new IllegalStateException("Invalid username or password");
 		}
-		return userMapper.toDTO(userOpt.get());
+		return userMapper.toDTO(user);
 	}
 
 	public UserDTO findByIdDTO(Long id) {
@@ -50,5 +49,30 @@ public class UserService {
 			throw new IllegalStateException("User not found");
 		}
 		return user;
+	}
+
+	public User findByUsername(String username) {
+		var user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new IllegalStateException("User not found");
+		}
+		return user;
+	}
+
+	public User getAuthenticated(HttpSession session) {
+		Object userId = session.getAttribute("user");
+		if (userId == null) {
+			throw new IllegalStateException("User not logged in");
+		}
+		User user = userRepository.findById((Long) userId).orElse(null);
+		if (user == null) {
+			throw new IllegalStateException("User not found");
+		}
+		return user;
+	}
+
+	public UserDTO getAuthenticatedDTO(HttpSession session) {
+		User user = getAuthenticated(session);
+		return userMapper.toDTO(user);
 	}
 }

@@ -21,16 +21,14 @@ public class AuthController {
 	}
 
 	@PostMapping("/signin")
-	public ResponseEntity<UserDTO> signin(@RequestBody UserDTO dto, HttpSession session) {
-		UserDTO userDTO = userService.authenticate(dto);
+	public ResponseEntity<UserDTO> signin(@RequestBody @Valid UserDTO dto, HttpSession session) {
+		UserDTO userDTO = userService.authenticate(dto, session);
 		return ResponseEntity.ok(userDTO);
 	}
 
 	@GetMapping("/me")
 	public ResponseEntity<?> me(HttpSession session) {
-		Long userId = (Long) session.getAttribute("user");
-		UserDTO userDTO = userService.findByIdDTO(userId);
-		return ResponseEntity.ok(userDTO);
+		return ResponseEntity.ok(userService.getAuthenticatedDTO(session));
 	}
 
 	@PostMapping("/logout")
