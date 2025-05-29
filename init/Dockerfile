@@ -1,7 +1,7 @@
-FROM mcr.microsoft.com/mssql/tools
+FROM mcr.microsoft.com/mssql/server:2022-latest
 
-# Install bash
-RUN apt-get update && apt-get install -y bash && rm -rf /var/lib/apt/lists/*
+# # Install bash
+# RUN apt-get update && apt-get install -y bash && rm -rf /var/lib/apt/lists/*
 
 # Copy initialization script
 COPY init-db.sh /init-db.sh
