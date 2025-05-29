@@ -17,10 +17,13 @@ public class CardInfo {
     private String cardNumber;
 
     @Column(nullable = false)
-    private LocalDate expiryDate;
+    private String expiryDate;
 
     @Column(nullable = false)
     private String cardholderName;
+
+    @Transient
+    private Boolean saveCard = false;
 
     // Getters and Setters
     public Long getId() {
@@ -47,11 +50,11 @@ public class CardInfo {
         this.cardNumber = cardNumber;
     }
 
-    public LocalDate getExpiryDate() {
+    public String getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(LocalDate expiryDate) {
+    public void setExpiryDate(String expiryDate) {
         this.expiryDate = expiryDate;
     }
 
@@ -61,5 +64,14 @@ public class CardInfo {
 
     public void setCardholderName(String cardholderName) {
         this.cardholderName = cardholderName;
+    }
+
+    public Boolean getSaveCard() {
+        return saveCard;
+    }
+
+    public CardInfo setSaveCard(Boolean saveCard) {
+        this.saveCard = saveCard;
+        return this;
     }
 }

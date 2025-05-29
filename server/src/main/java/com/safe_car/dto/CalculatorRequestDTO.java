@@ -1,6 +1,6 @@
 package com.safe_car.dto;
 
-public class CalculatorRequest {
+public class CalculatorRequestDTO {
     private String make;
     private String model;
     private int year;

@@ -1,6 +1,6 @@
 package com.safe_car.service;
 
-import com.safe_car.dto.CalculatorRequest;
+import com.safe_car.dto.CalculatorRequestDTO;
 import com.safe_car.dto.CalculatorResponse;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ public class CalculatorService {
     private static final double INCIDENT_FACTOR = 250.0;
     private static final double AGE_FACTOR = 5.0;
 
-    public CalculatorResponse calculatePremium(CalculatorRequest request) {
+    public CalculatorResponse calculatePremium(CalculatorRequestDTO request) {
         double premium = BASE_PREMIUM;
 
         // Apply coverage type multiplier

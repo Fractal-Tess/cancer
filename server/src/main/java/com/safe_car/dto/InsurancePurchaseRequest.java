@@ -1,74 +1,46 @@
 package com.safe_car.dto;
 
+import com.safe_car.entity.CardInfo;
+
 import java.util.Map;
 
 public class InsurancePurchaseRequest {
-    private Double premium;
-    private Map<String, Object> carDetails;
-    private CardDetails cardDetails;
+	private Double premium;
+	private Map<String, Object> carDetails;
+	private Boolean saveCard;
+	private CardInfo cardDetails;
 
-    public static class CardDetails {
-        private String cardNumber;
-        private String expiryDate;
-        private String cvv;
-        private String cardholderName;
+	// Getters and Setters
+	public Double getPremium() {
+		return premium;
+	}
 
-        // Getters and Setters
-        public String getCardNumber() {
-            return cardNumber;
-        }
+	public void setPremium(Double premium) {
+		this.premium = premium;
+	}
 
-        public void setCardNumber(String cardNumber) {
-            this.cardNumber = cardNumber;
-        }
+	public Map<String, Object> getCarDetails() {
+		return carDetails;
+	}
 
-        public String getExpiryDate() {
-            return expiryDate;
-        }
+	public void setCarDetails(Map<String, Object> carDetails) {
+		this.carDetails = carDetails;
+	}
 
-        public void setExpiryDate(String expiryDate) {
-            this.expiryDate = expiryDate;
-        }
+	public CardInfo getCardDetails() {
+		return cardDetails;
+	}
 
-        public String getCvv() {
-            return cvv;
-        }
+	public void setCardDetails(CardInfo cardDetails) {
+		this.cardDetails = cardDetails;
+	}
 
-        public void setCvv(String cvv) {
-            this.cvv = cvv;
-        }
+	public Boolean getSaveCard() {
+		return saveCard;
+	}
 
-        public String getCardholderName() {
-            return cardholderName;
-        }
-
-        public void setCardholderName(String cardholderName) {
-            this.cardholderName = cardholderName;
-        }
-    }
-
-    // Getters and Setters
-    public Double getPremium() {
-        return premium;
-    }
-
-    public void setPremium(Double premium) {
-        this.premium = premium;
-    }
-
-    public Map<String, Object> getCarDetails() {
-        return carDetails;
-    }
-
-    public void setCarDetails(Map<String, Object> carDetails) {
-        this.carDetails = carDetails;
-    }
-
-    public CardDetails getCardDetails() {
-        return cardDetails;
-    }
-
-    public void setCardDetails(CardDetails cardDetails) {
-        this.cardDetails = cardDetails;
-    }
+	public InsurancePurchaseRequest setSaveCard(Boolean saveCard) {
+		this.saveCard = saveCard;
+		return this;
+	}
 }
